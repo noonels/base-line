@@ -1,16 +1,16 @@
-;;; mood-line.el --- A minimal mode-line inspired by doom-modeline -*- lexical-binding: t; -*-
+;;; base-line.el --- A minimal mode-line forked from mood-line -*- lexical-binding: t; -*-
 
-;; Author: Jessie Hildebrandt <jessieh.net>
-;; Homepage: https://gitlab.com/jessieh/mood-line
-;; Keywords: mode-line faces
-;; Version: 1.2.4
+;; Author: M Cooper Healy <m.cooper.healy@gmail.com>
+;; Homepage: https://github.com/noonels/base-line
+;; Keywords: base-line faces
+;; Version: 0.9
 ;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
 
 ;;; Commentary:
 ;;
-;; mood-line is a minimal mode-line configuration that aims to replicate
+;; base-line is a minimal mode-line configuration that aims to replicate
 ;; some of the features of the doom-modeline package.
 ;;
 ;; Features offered:
@@ -21,8 +21,8 @@
 ;; * Flymake support
 ;; * Lightweight with no dependencies
 ;;
-;; To enable mood-line:
-;; (mood-line-mode)
+;; To enable base-line:
+;; (base-line-mode)
 
 ;;; License:
 ;;
@@ -67,91 +67,91 @@
 ;; Config
 ;;
 
-(defgroup mood-line nil
+(defgroup base-line nil
   "A minimal mode-line configuration inspired by doom-modeline."
   :group 'mode-line)
 
-(defcustom mood-line-show-eol-style nil
+(defcustom base-line-show-eol-style nil
   "If t, the EOL style of the current buffer will be displayed in the mode-line."
-  :group 'mood-line
+  :group 'base-line
   :type 'boolean)
 
-(defcustom mood-line-show-encoding-information nil
+(defcustom base-line-show-encoding-information nil
   "If t, the encoding format of the current buffer will be displayed in the mode-line."
-  :group 'mood-line
+  :group 'base-line
   :type 'boolean)
 
-(defcustom mood-line-show-cursor-point nil
+(defcustom base-line-show-cursor-point nil
   "If t, the value of `point' will be displayed next to the cursor position in the mode-line."
-  :group 'mood-line
+  :group 'base-line
   :type 'boolean)
 
-(defface mood-line-buffer-name
+(defface base-line-buffer-name
   '((t (:inherit (mode-line-buffer-id))))
   "Face used for major mode indicator in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-major-mode
+(defface base-line-major-mode
   '((t (:inherit (bold))))
   "Face used for major mode indicator in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-status-neutral
+(defface base-line-status-neutral
   '((t (:inherit (shadow))))
   "Face used for neutral or inactive status indicators in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-status-info
+(defface base-line-status-info
   '((t (:inherit (font-lock-keyword-face))))
   "Face used for generic status indicators in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-status-success
+(defface base-line-status-success
   '((t (:inherit (success))))
   "Face used for success status indicators in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-status-warning
+(defface base-line-status-warning
   '((t (:inherit (warning))))
   "Face for warning status indicators in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-status-error
+(defface base-line-status-error
   '((t (:inherit (error))))
   "Face for error stauts indicators in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-unimportant
+(defface base-line-unimportant
   '((t (:inherit (shadow))))
   "Face used for less important mode-line elements."
-  :group 'mood-line)
+  :group 'base-line)
 
-(defface mood-line-modified
+(defface base-line-modified
   '((t (:inherit (error))))
   "Face used for the 'modified' indicator symbol in the mode-line."
-  :group 'mood-line)
+  :group 'base-line)
 
 ;;
 ;; Helper functions
 ;;
 
-(defun mood-line--string-trim-left (string)
+(defun base-line--string-trim-left (string)
   "Remove whitespace at the beginning of STRING."
   (if (string-match "\\`[ \t\n\r]+" string)
       (replace-match "" t t string)
     string))
 
-(defun mood-line--string-trim-right (string)
+(defun base-line--string-trim-right (string)
   "Remove whitespace at the end of STRING."
   (if (string-match "[ \t\n\r]+\\'" string)
       (replace-match "" t t string)
     string))
 
-(defun mood-line--string-trim (string)
+(defun base-line--string-trim (string)
   "Remove whitespace at the beginning and end of STRING."
-  (mood-line--string-trim-left (mood-line--string-trim-right string)))
+  (base-line--string-trim-left (base-line--string-trim-right string)))
 
-(defun mood-line--format (left right)
+(defun base-line--format (left right)
   "Return a string of `window-width' length containing LEFT and RIGHT, aligned respectively."
   (let ((reserve (length right)))
     (concat left
@@ -164,38 +164,38 @@
 ;; Update functions
 ;;
 
-(defvar-local mood-line--vc-text nil)
-(defun mood-line--update-vc-segment (&rest _)
-  "Update `mood-line--vc-text' against the current VCS state."
-  (setq mood-line--vc-text
+(defvar-local base-line--vc-text nil)
+(defun base-line--update-vc-segment (&rest _)
+  "Update `base-line--vc-text' against the current VCS state."
+  (setq base-line--vc-text
         (when (and vc-mode buffer-file-name)
           (let ((backend (vc-backend buffer-file-name))
                 (state (vc-state buffer-file-name (vc-backend buffer-file-name))))
             (let ((face 'mode-line-neutral))
               (concat (cond ((memq state '(edited added))
-                             (setq face 'mood-line-status-info)
+                             (setq face 'base-line-status-info)
                              (propertize "+ " 'face face))
                             ((eq state 'needs-merge)
-                             (setq face 'mood-line-status-warning)
+                             (setq face 'base-line-status-warning)
                              (propertize "⟷ " 'face face))
                             ((eq state 'needs-update)
-                             (setq face 'mood-line-status-warning)
+                             (setq face 'base-line-status-warning)
                              (propertize "↑ " 'face face))
                             ((memq state '(removed conflict unregistered))
-                             (setq face 'mood-line-status-error)
+                             (setq face 'base-line-status-error)
                              (propertize "✖ " 'face face))
                             (t
-                             (setq face 'mood-line-status-neutral)
+                             (setq face 'base-line-status-neutral)
                              (propertize "✔ " 'face face)))
                       (propertize (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2))
                                   'face face
                                   'mouse-face face)
                       "  "))))))
 
-(defvar-local mood-line--flycheck-text nil)
-(defun mood-line--update-flycheck-segment (&optional status)
-  "Update `mood-line--flycheck-text' against the reported flycheck STATUS."
-  (setq mood-line--flycheck-text
+(defvar-local base-line--flycheck-text nil)
+(defun base-line--update-flycheck-segment (&optional status)
+  "Update `base-line--flycheck-text' against the reported flycheck STATUS."
+  (setq base-line--flycheck-text
         (pcase status
           ('finished (if flycheck-current-errors
                          (let-alist (flycheck-count-errors flycheck-current-errors)
@@ -204,167 +204,167 @@
                                                  (number-to-string sum)
                                                  "  ")
                                          'face (if .error
-                                                   'mood-line-status-error
-                                                 'mood-line-status-warning))))
-                       (propertize "✔ Good  " 'face 'mood-line-status-success)))
-          ('running (propertize "Δ Checking  " 'face 'mood-line-status-info))
-          ('errored (propertize "✖ Error  " 'face 'mood-line-status-error))
-          ('interrupted (propertize "⏸ Paused  " 'face 'mood-line-status-neutral))
+                                                   'base-line-status-error
+                                                 'base-line-status-warning))))
+                       (propertize "✔ Good  " 'face 'base-line-status-success)))
+          ('running (propertize "Δ Checking  " 'face 'base-line-status-info))
+          ('errored (propertize "✖ Error  " 'face 'base-line-status-error))
+          ('interrupted (propertize "⏸ Paused  " 'face 'base-line-status-neutral))
           ('no-checker ""))))
 
 ;;
 ;; Segments
 ;;
 
-(defun mood-line-segment-modified ()
+(defun base-line-segment-modified ()
   "Displays a color-coded buffer modification/read-only indicator in the mode-line."
   (if (not (string-match-p "\\*.*\\*" (buffer-name)))
       (if (buffer-modified-p)
-          (propertize "● " 'face 'mood-line-modified)
+          (propertize "● " 'face 'base-line-modified)
         (if (and buffer-read-only (buffer-file-name))
-            (propertize "■ " 'face 'mood-line-unimportant)
+            (propertize "■ " 'face 'base-line-unimportant)
           "  "))
     "  "))
 
-(defun mood-line-segment-buffer-name ()
+(defun base-line-segment-buffer-name ()
   "Displays the name of the current buffer in the mode-line."
-  (propertize "%b  " 'face 'mood-line-buffer-name))
+  (propertize "%b  " 'face 'base-line-buffer-name))
 
-(defun mood-line-segment-anzu ()
+(defun base-line-segment-anzu ()
   "Displays color-coded anzu status information in the mode-line (if available)."
   (when (and (boundp 'anzu--state) anzu--state)
     (cond ((eq anzu--state 'replace-query)
-           (format #("Replace: %d  " 0 11 (face mood-line-status-warning)) anzu--cached-count))
+           (format #("Replace: %d  " 0 11 (face base-line-status-warning)) anzu--cached-count))
           (anzu--overflow-p
-           (format #("%d/%d+  " 0 3 (face mood-line-status-info) 3 6 (face mood-line-status-error)) anzu--current-position anzu--total-matched))
+           (format #("%d/%d+  " 0 3 (face base-line-status-info) 3 6 (face base-line-status-error)) anzu--current-position anzu--total-matched))
           (t
-           (format #("%d/%d  " 0 5 (face mood-line-status-info)) anzu--current-position anzu--total-matched)))))
+           (format #("%d/%d  " 0 5 (face base-line-status-info)) anzu--current-position anzu--total-matched)))))
 
-(defun mood-line-segment-multiple-cursors ()
+(defun base-line-segment-multiple-cursors ()
   "Displays the number of active multiple-cursors in the mode-line (if available)."
   (when (and (boundp 'multiple-cursors-mode) multiple-cursors-mode)
     (concat "MC"
-            (format #("×%d  " 0 3 (face mood-line-status-warning)) (mc/num-cursors)))))
+            (format #("×%d  " 0 3 (face base-line-status-warning)) (mc/num-cursors)))))
 
-(defun mood-line-segment-position ()
+(defun base-line-segment-position ()
   "Displays the current cursor position in the mode-line."
   (concat "%l:%c"
-          (when mood-line-show-cursor-point (propertize (format ":%d" (point)) 'face 'mood-line-unimportant))
-          (propertize " %p%%  " 'face 'mood-line-unimportant)))
+          (when base-line-show-cursor-point (propertize (format ":%d" (point)) 'face 'base-line-unimportant))
+          (propertize " %p%%  " 'face 'base-line-unimportant)))
 
-(defun mood-line-segment-eol ()
+(defun base-line-segment-eol ()
   "Displays the EOL style of the current buffer in the mode-line."
-  (when mood-line-show-eol-style
+  (when base-line-show-eol-style
     (pcase (coding-system-eol-type buffer-file-coding-system)
       (0 "LF  ")
       (1 "CRLF  ")
       (2 "CR  "))))
 
-(defun mood-line-segment-encoding ()
+(defun base-line-segment-encoding ()
   "Displays the encoding and EOL style of the buffer in the mode-line."
-  (when mood-line-show-encoding-information
+  (when base-line-show-encoding-information
     (concat (let ((sys (coding-system-plist buffer-file-coding-system)))
               (cond ((memq (plist-get sys :category) '(coding-category-undecided coding-category-utf-8))
                      "UTF-8")
                     (t (upcase (symbol-name (plist-get sys :name))))))
             "  ")))
 
-(defun mood-line-segment-vc ()
+(defun base-line-segment-vc ()
   "Displays color-coded version control information in the mode-line."
-  mood-line--vc-text)
+  base-line--vc-text)
 
-(defun mood-line-segment-major-mode ()
+(defun base-line-segment-major-mode ()
   "Displays the current major mode in the mode-line."
-  (concat (format-mode-line mode-name 'mood-line-major-mode) "  "))
+  (concat (format-mode-line mode-name 'base-line-major-mode) "  "))
 
-(defun mood-line-segment-misc-info ()
+(defun base-line-segment-misc-info ()
   "Displays the current value of `mode-line-misc-info' in the mode-line."
-  (let ((misc-info (format-mode-line mode-line-misc-info 'mood-line-unimportant)))
-    (unless (string= (mood-line--string-trim misc-info) "")
-      (concat (mood-line--string-trim misc-info) "  "))))
+  (let ((misc-info (format-mode-line mode-line-misc-info 'base-line-unimportant)))
+    (unless (string= (base-line--string-trim misc-info) "")
+      (concat (base-line--string-trim misc-info) "  "))))
 
-(defun mood-line-segment-flycheck ()
+(defun base-line-segment-flycheck ()
   "Displays color-coded flycheck information in the mode-line (if available)."
-  mood-line--flycheck-text)
+  base-line--flycheck-text)
 
-(defun mood-line-segment-flymake ()
+(defun base-line-segment-flymake ()
   "Displays information about the current status of flymake in the mode-line (if available)."
   (when (and (boundp 'flymake-mode) flymake-mode)
-    (concat (mood-line--string-trim (format-mode-line flymake--mode-line-format)) "  ")))
+    (concat (base-line--string-trim (format-mode-line flymake--mode-line-format)) "  ")))
 
-(defun mood-line-segment-process ()
+(defun base-line-segment-process ()
   "Displays the current value of `mode-line-process' in the mode-line."
   (let ((process-info (format-mode-line mode-line-process)))
-    (unless (string= (mood-line--string-trim process-info) "")
-      (concat (mood-line--string-trim process-info) "  "))))
+    (unless (string= (base-line--string-trim process-info) "")
+      (concat (base-line--string-trim process-info) "  "))))
 
 ;;
 ;; Activation function
 ;;
 
 ;; Store the default mode-line format
-(defvar mood-line--default-mode-line mode-line-format)
+(defvar base-line--default-mode-line mode-line-format)
 
 ;;;###autoload
-(define-minor-mode mood-line-mode
-  "Toggle mood-line on or off."
-  :group 'mood-line
+(define-minor-mode base-line-mode
+  "Toggle base-line on or off."
+  :group 'base-line
   :global t
   :lighter nil
-  (if mood-line-mode
+  (if base-line-mode
       (progn
 
         ;; Setup flycheck hooks
-        (add-hook 'flycheck-status-changed-functions #'mood-line--update-flycheck-segment)
-        (add-hook 'flycheck-mode-hook #'mood-line--update-flycheck-segment)
+        (add-hook 'flycheck-status-changed-functions #'base-line--update-flycheck-segment)
+        (add-hook 'flycheck-mode-hook #'base-line--update-flycheck-segment)
 
         ;; Setup VC hooks
-        (add-hook 'find-file-hook #'mood-line--update-vc-segment)
-        (add-hook 'after-save-hook #'mood-line--update-vc-segment)
-        (advice-add #'vc-refresh-state :after #'mood-line--update-vc-segment)
+        (add-hook 'find-file-hook #'base-line--update-vc-segment)
+        (add-hook 'after-save-hook #'base-line--update-vc-segment)
+        (advice-add #'vc-refresh-state :after #'base-line--update-vc-segment)
 
         ;; Set the new mode-line-format
         (setq-default mode-line-format
                       '((:eval
-                         (mood-line--format
+                         (base-line--format
                           ;; Left
                           (format-mode-line
                            '(" "
-                             (:eval (mood-line-segment-modified))
-                             (:eval (mood-line-segment-buffer-name))
-                             (:eval (mood-line-segment-anzu))
-                             (:eval (mood-line-segment-multiple-cursors))
-                             (:eval (mood-line-segment-position))))
+                             (:eval (base-line-segment-modified))
+                             (:eval (base-line-segment-buffer-name))
+                             (:eval (base-line-segment-anzu))
+                             (:eval (base-line-segment-multiple-cursors))
+                             (:eval (base-line-segment-position))))
 
                           ;; Right
                           (format-mode-line
-                           '((:eval (mood-line-segment-eol))
-                             (:eval (mood-line-segment-encoding))
-                             (:eval (mood-line-segment-vc))
-                             (:eval (mood-line-segment-major-mode))
-                             (:eval (mood-line-segment-misc-info))
-                             (:eval (mood-line-segment-flycheck))
-                             (:eval (mood-line-segment-flymake))
-                             (:eval (mood-line-segment-process))
+                           '((:eval (base-line-segment-eol))
+                             (:eval (base-line-segment-encoding))
+                             (:eval (base-line-segment-vc))
+                             (:eval (base-line-segment-major-mode))
+                             (:eval (base-line-segment-misc-info))
+                             (:eval (base-line-segment-flycheck))
+                             (:eval (base-line-segment-flymake))
+                             (:eval (base-line-segment-process))
                              " ")))))))
     (progn
 
       ;; Remove flycheck hooks
-      (remove-hook 'flycheck-status-changed-functions #'mood-line--update-flycheck-segment)
-      (remove-hook 'flycheck-mode-hook #'mood-line--update-flycheck-segment)
+      (remove-hook 'flycheck-status-changed-functions #'base-line--update-flycheck-segment)
+      (remove-hook 'flycheck-mode-hook #'base-line--update-flycheck-segment)
 
       ;; Remove VC hooks
-      (remove-hook 'file-find-hook #'mood-line--update-vc-segment)
-      (remove-hook 'after-save-hook #'mood-line--update-vc-segment)
-      (advice-remove #'vc-refresh-state #'mood-line--update-vc-segment)
+      (remove-hook 'file-find-hook #'base-line--update-vc-segment)
+      (remove-hook 'after-save-hook #'base-line--update-vc-segment)
+      (advice-remove #'vc-refresh-state #'base-line--update-vc-segment)
 
       ;; Restore the original mode-line format
-      (setq-default mode-line-format mood-line--default-mode-line))))
+      (setq-default mode-line-format base-line--default-mode-line))))
 
 ;;
-;; Provide mood-line
+;; Provide base-line
 ;;
 
-(provide 'mood-line)
+(provide 'base-line)
 
-;;; mood-line.el ends here
+;;; base-line.el ends here
