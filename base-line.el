@@ -13,6 +13,8 @@
 ;; base-line is a minimal mode-line configuration that aims to replicate
 ;; some of the features of the doom-modeline package.
 ;;
+;; This was initially based on jessiehildebrandt's wonderful mood-line package, but with some (mostly aesthetic) tweaks.
+;;
 ;; Features offered:
 ;; * Clean, minimal design
 ;; * Anzu and multiple-cursors counter
@@ -128,7 +130,7 @@
 
 (defface base-line-modified
   '((t (:inherit (error))))
-  "Face used for the 'modified' indicator symbol in the mode-line."
+  "Face used for the `modified' indicator symbol in the mode-line."
   :group 'base-line)
 
 ;;
@@ -152,7 +154,7 @@
   (base-line--string-trim-left (base-line--string-trim-right string)))
 
 (defun base-line--format (left right)
-  "Return a string of `window-width' length containing LEFT and RIGHT, aligned respectively."
+  "Return a string of `window-width'  of the form `LEFT <witespace> RIGHT'."
   (let ((reserve (length right)))
     (concat left
             " "
@@ -222,13 +224,13 @@
       (if (buffer-modified-p)
           (propertize "● " 'face 'base-line-modified)
         (if (and buffer-read-only (buffer-file-name))
-            (propertize "■ " 'face 'base-line-unimportant)
+            (propertize "𝛌 " 'face 'base-line-modified)
           "  "))
     "  "))
 
 (defun base-line-segment-buffer-name ()
   "Displays the name of the current buffer in the mode-line."
-  (propertize "%b  " 'face 'base-line-buffer-name))
+  (propertize "%b " 'face 'base-line-buffer-name))
 
 (defun base-line-segment-anzu ()
   "Displays color-coded anzu status information in the mode-line (if available)."
@@ -275,7 +277,7 @@
 
 (defun base-line-segment-major-mode ()
   "Displays the current major mode in the mode-line."
-  (concat (format-mode-line mode-name 'base-line-major-mode) "  "))
+  (concat "//  " (format-mode-line mode-name 'base-line-major-mode) "  //  "))
 
 (defun base-line-segment-misc-info ()
   "Displays the current value of `mode-line-misc-info' in the mode-line."
@@ -288,7 +290,7 @@
   base-line--flycheck-text)
 
 (defun base-line-segment-flymake ()
-  "Displays information about the current status of flymake in the mode-line (if available)."
+  "Displays information about the current status of flymake in the mode-line."
   (when (and (boundp 'flymake-mode) flymake-mode)
     (concat (base-line--string-trim (format-mode-line flymake--mode-line-format)) "  ")))
 
@@ -331,10 +333,13 @@
                           (format-mode-line
                            '(" "
                              (:eval (base-line-segment-modified))
+                             "{ "
                              (:eval (base-line-segment-buffer-name))
+                             ":: "
                              (:eval (base-line-segment-anzu))
                              (:eval (base-line-segment-multiple-cursors))
-                             (:eval (base-line-segment-position))))
+                             (:eval (base-line-segment-position))
+                             "}"))
 
                           ;; Right
                           (format-mode-line
